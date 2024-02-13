@@ -20,33 +20,38 @@ export const SocketProvider = ({ children }) => {
     (msg) => {
       console.log("Send Message", msg);
       if (socket) {
-        socket.emit("event:message", { message: msg });
+        socket.emit("event:message", { message: msg, from: socket.id });
       }
     },
     [socket]
   );
 
-  const onMessageRec = useCallback((msg) => {
-    console.log("From Server Msg Rec", msg);
-    const { message } = JSON.parse(msg);
-    setMessages((prev) => [...prev, message]);
+  const onMessageRec = useCallback((message) => {
+    console.log("From Server Msg Rec", message.message);
+    console.log("From: ", message.from);
+
+    const messageObject = {
+      message: message.message,
+      from: message.from
+  };
+    setMessages((prev) => [...prev, messageObject]);
   }, []);
 
   useEffect(() => {
     const _socket = io("http://localhost:8000");
-    _socket.on("message", onMessageRec);
+    _socket.on("event:message", onMessageRec);
 
     setSocket(_socket);
 
     return () => {
-      _socket.off("message", onMessageRec);
+      _socket.off("event:message", onMessageRec);
       _socket.disconnect();
       setSocket(undefined);
     };
   }, []);
 
   return (
-    <SocketContext.Provider value={{ sendMessage, messages }}>
+    <SocketContext.Provider value={{ sendMessage, messages, socket }}>
       {children}
     </SocketContext.Provider>
   );

@@ -35,19 +35,36 @@ class SocketService {
 
     io.on("connect", (socket) => {
       console.log(`New Socket Connected`, socket.id);
-      socket.on("event:message", async ({ message }) => {
-        console.log("New Message Rec.", message);
-        // publish this message to redis
-        await pub.publish("MESSAGES", JSON.stringify({ message }));
+
+      socket.on("event:message", async ({ message, from }) => {
+
+        const messageObject = {
+          message: message,
+          from: from
+      };
+  
+      // publish this message to redis
+      await pub.publish("MESSAGES", JSON.stringify(messageObject));
       });
     });
 
     sub.on("message", async (channel, message) => {
+
       if (channel === "MESSAGES") {
-        console.log("new message from redis", message);
-        io.emit("message", message);
+
+        const parsedMessage = JSON.parse(message);
+    
+      // Now you can access both message and from properties
+        console.log("Received message from redis :", parsedMessage.message);
+        console.log("From user :", parsedMessage.from);
+
+        // console.log("new message from redis", message);
+
+        io.emit("event:message", { message: parsedMessage.message, from: parsedMessage.from });
+
         await produceMessage(message);
         console.log("Message Produced to Kafka Broker");
+
       }
     });
   }
