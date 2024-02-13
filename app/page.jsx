@@ -23,7 +23,7 @@ export default function Page() {
 
   return (
     <div className=" flex w-[100vw] h-[100vh] justify-center items-center">
-    <div className=" w-[100%] sm:w-1/2 h-[100%] bg-gray-900">
+    <div className=" scale-75 sm:scale-100 w-[100%] sm:w-1/2 h-[100%] bg-gray-900">
 
           <div className=" bg-white p-2 sm:p-4 text-black text-lg sm:text-xl font-bold">Live Users: <span className=" text-red-400">{liveUsers}</span></div>
             
@@ -40,8 +40,8 @@ export default function Page() {
                       >
                       {
                         !(msg.from === socket.id) ?
-                        <div><div className=" text-red-400 text-[5px] sm:text-[10px]">id:{msg.from} </div>{msg.message} <div className=" text-end text-[4px] sm:text-[8px] font-normal">{msg.time}</div></div> : 
-                        <span>{msg.message} <div className=" text-end text-[4px] sm:text-[8px] font-normal">{msg.time}</div></span>
+                        <div><div className=" text-red-400 text-[15px] sm:text-[30px]">id:{msg.from} </div>{msg.message} <div className=" text-end text-[12px] sm:text-[25px] font-normal">{msg.time}</div></div> : 
+                        <span>{msg.message} <div className=" text-end text-[12px] sm:text-[25px] font-normal">{msg.time}</div></span>
                       }
                       </div>
                     ))}
